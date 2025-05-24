@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+requests
+beautifulsoup4
+python-dotenv
+openai
+faiss-cpu
+streamlit
+transformers
+torch
+sentence-transformers
+flake8
+black
+isort
+pytest
