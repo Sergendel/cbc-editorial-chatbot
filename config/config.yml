@@ -1,0 +1,13 @@
+data:
+  raw_news_path: "data/raw/news-dataset.json"
+  processed_news_path: "data/processed/news_articles.json"
+
+  guidelines_url: "https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices"
+  processed_guidelines_path: "data/processed/editorial_guidelines.json"
+
+embeddings:
+  model_name: "text-embedding-ada-002"
+  faiss_index_path: "data/index/faiss_index.idx"
+
+model:
+  hf_model_name: "meta-llama/Llama-3-8B-Instruct"
