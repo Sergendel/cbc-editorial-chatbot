@@ -29,13 +29,13 @@ class TransformGuidelines(TransformBase):
     def __init__(self, config):
         """Initialize paths and URLs from configuration."""
         self.processed_guidelines_path = config.processed_guidelines_path
-        self.raw_guidelines_folder = config.raw_guidelines_folder
+        self.extracted_guidelines_folder = config.extracted_guidelines_folder
         self.guidelines_base_url = config.guidelines_url
 
     def transform(self):
         """Process all HTML files and save structured JSON."""
         all_files_result = {}
-        html_files = Path(self.raw_guidelines_folder).glob("*.html")
+        html_files = Path(self.extracted_guidelines_folder).glob("*.html")
 
         for html_file in html_files:
             logging.info(f"Starting processing: {html_file.name}")

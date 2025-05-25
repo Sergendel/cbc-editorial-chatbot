@@ -13,8 +13,12 @@ class Config:
             self.cfg = yaml.safe_load(f)
 
     @property
-    def raw_guidelines_folder(self):
-        return self.project_root / Path(self.cfg["data"]["raw_guidelines_folder"])
+    def extracted_news_path(self):
+        return self.project_root / Path(self.cfg["data"]["extracted_news_path"])
+
+    @property
+    def extracted_guidelines_folder(self):
+        return self.project_root / Path(self.cfg["data"]["extracted_guidelines_folder"])
 
     @property
     def raw_news_path(self):
