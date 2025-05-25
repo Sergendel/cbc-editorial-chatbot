@@ -139,10 +139,11 @@ class TransformGuidelines(TransformBase):
                     general_content += " " + element.get_text(strip=True)
                 idx += 1
 
-            if general_content.strip():
-                nested_dict["General"] = general_content.strip()
-
-            single_file_result[first_level_title] = nested_dict
+            # Simplified logic (remove redundant "General")
+            if nested_dict:
+                single_file_result[first_level_title] = nested_dict
+            elif general_content.strip():
+                single_file_result[first_level_title] = general_content.strip()
 
         return main_page_title, single_file_result
 
