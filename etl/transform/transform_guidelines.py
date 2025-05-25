@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(log_dir / "transform.log"),
+        logging.FileHandler(log_dir / "transform_guidelines.log"),
         logging.StreamHandler(),
     ],
 )
