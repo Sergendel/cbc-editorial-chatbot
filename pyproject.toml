@@ -18,4 +18,5 @@ exclude = [
     ".utils",
     "frontend",
     "notebooks",
+    "logs",
 ]

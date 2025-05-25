@@ -6,6 +6,6 @@ venv/
 .idea/
 .vscode/
 .ipynb_checkpoints
-
+logs
 # Personal utility files
 .utils/
