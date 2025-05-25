@@ -1,12 +1,15 @@
-from etl.extract.extract_base import ExtractBase
-from config.config import Config
 import json
 from pathlib import Path
+
+from config.config import Config
+from etl.extract.extract_base import ExtractBase
+
 
 class ExtractFile(ExtractBase):
     """
     Explicit class for JSON file data extraction.
     """
+
     def __init__(self, config: Config):
         self.file_path = config.raw_news_path
 
@@ -16,7 +19,7 @@ class ExtractFile(ExtractBase):
         Returns loaded data or None if errors occur.
         """
         try:
-            with open(self.file_path, 'r', encoding='utf-8') as file:
+            with open(self.file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
             return data
 
@@ -24,12 +27,16 @@ class ExtractFile(ExtractBase):
             print(f"Error: File '{self.file_path}' not found. Details: {e}")
 
         except json.JSONDecodeError as e:
-            print(f"Error: File '{self.file_path}' is corrupted or invalid JSON. Details: {e}")
+            print(
+                f"Error: File '{self.file_path}' is"
+                f" corrupted or invalid JSON. Details: {e}"
+            )
 
         except Exception as e:
-            print(f"Unexpected error explicitly: {e}")
+            print(f"Unexpected error: {e}")
 
         return None
+
 
 if __name__ == "__main__":
     project_root = Path(__file__).parent.parent.parent.resolve()

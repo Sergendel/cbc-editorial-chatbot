@@ -4,6 +4,7 @@ data:
 
   guidelines_url: "https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices"
   processed_guidelines_path: "data/processed/editorial_guidelines.json"
+  raw_guidelines_folder: "data/raw/raw_guidelines_html"
 
 embeddings:
   model_name: "text-embedding-ada-002"
