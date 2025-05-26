@@ -15,4 +15,4 @@ model:
   hf_model_name: "meta-llama/Llama-3-8B-Instruct"
 
 embedding_loader:
-  batch_size: 500
+  batch_size: 20
