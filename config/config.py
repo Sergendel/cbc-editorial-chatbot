@@ -13,6 +13,10 @@ class Config:
             self.cfg = yaml.safe_load(f)
 
     @property
+    def embedding_loader_batch_size(self):
+        return self.cfg["embedding_loader"]["batch_size"]
+
+    @property
     def extracted_news_path(self):
         return self.project_root / Path(self.cfg["data"]["extracted_news_path"])
 
