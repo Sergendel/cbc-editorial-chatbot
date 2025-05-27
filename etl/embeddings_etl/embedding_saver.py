@@ -48,8 +48,8 @@ class EmbeddingSaver:
 if __name__ == "__main__":
     # from etl.load.embedding_saver import EmbeddingSaver
     from config.config import Config
-    from etl.embeddings_etl.load.batch_embedder import BatchEmbedder
-    from etl.embeddings_etl.load.guidelines_embedding_loader import (
+    from etl.embeddings_etl.batch_embedder import BatchEmbedder
+    from etl.embeddings_etl.guidelines_embedding_loader import (
         DataHolder,
         EmbeddingLoader,
     )

@@ -1,7 +1,10 @@
 from pathlib import Path
-from langchain_community.vectorstores import FAISS
+
 from langchain.embeddings.base import Embeddings
+from langchain_community.vectorstores import FAISS
+
 from embeddings import load_embeddings
+
 
 class PrecomputedEmbeddings(Embeddings):
     def __init__(self, embeddings_array):
@@ -13,6 +16,7 @@ class PrecomputedEmbeddings(Embeddings):
     def embed_query(self, text):
         raise NotImplementedError("Queries explicitly handled separately.")
 
+
 def create_faiss_index(texts, embeddings, metadata, save_path):
     precomputed_embeddings = PrecomputedEmbeddings(embeddings)
 
@@ -22,17 +26,22 @@ def create_faiss_index(texts, embeddings, metadata, save_path):
     faiss_index = FAISS.from_embeddings(
         text_embeddings=text_embedding_pairs,
         embedding=precomputed_embeddings,
-        metadatas=metadata
+        metadatas=metadata,
     )
     faiss_index.save_local(save_path)
     print(f"FAISS index explicitly saved at {save_path}.")
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 if __name__ == "__main__":
     # Explicit Guidelines embeddings paths
-    guidelines_embeddings_path = BASE_DIR / "data/embeddings_storage/guidelines_embeddings.npy"
-    guidelines_metadata_path = BASE_DIR / "data/embeddings_storage/guidelines_metadata.json"
+    guidelines_embeddings_path = (
+        BASE_DIR / "data/embeddings_storage/guidelines_embeddings.npy"
+    )
+    guidelines_metadata_path = (
+        BASE_DIR / "data/embeddings_storage/guidelines_metadata.json"
+    )
     guidelines_index_path = BASE_DIR / "data/vector_indexes/guidelines_faiss_index"
 
     texts, embeddings, metadata = load_embeddings(
