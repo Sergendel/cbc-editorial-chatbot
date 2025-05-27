@@ -61,6 +61,7 @@ class NewsArticlesEmbeddingLoader(EmbeddingLoaderBase):
                 "categories": article.get("categories", []),
                 "tags": article.get("tags", {}),
                 "department": article.get("department", "Unknown department"),
+                "chunk_text": text_to_embed,  # Explicitly include the chunk text here
             }
             self.embeddings_with_metadata.append(
                 {"text": text_to_embed, "metadata": chunk_metadata}
@@ -73,8 +74,8 @@ class NewsArticlesEmbeddingLoader(EmbeddingLoaderBase):
 
 
 if __name__ == "__main__":
-    from etl.embeddings_etl.load.batch_embedder import BatchEmbedder
-    from etl.embeddings_etl.load.embedding_saver import EmbeddingSaver
+    from etl.embeddings_etl.batch_embedder import BatchEmbedder
+    from etl.embeddings_etl.embedding_saver import EmbeddingSaver
     from models.embedding_model import embedding_model_function
 
     config_path = project_root / "config" / "config.yml"

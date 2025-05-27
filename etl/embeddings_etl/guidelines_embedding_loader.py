@@ -100,6 +100,7 @@ class EmbeddingLoader(EmbeddingLoaderBase):
             "content_snippet": text[:100],
             "url": metadata.get("original_url", DEFAULT_URL),
             "timestamp": metadata.get("timestamp", DEFAULT_TIMESTAMP),
+            "chunk_text": text,  # Explicitly include the full chunk text here
         }
         logger.info(f"Created chunk at {' > '.join(path)} [{chunk_level}]")
         self.embeddings_with_metadata.append({"text": text, "metadata": chunk_metadata})

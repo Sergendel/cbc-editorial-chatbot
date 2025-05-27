@@ -18,3 +18,5 @@ playwright
 pandas
 tiktoken
 python-dotenv
+langchain
+langchain-community
