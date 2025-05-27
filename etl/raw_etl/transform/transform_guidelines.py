@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from datetime import datetime
@@ -7,9 +6,9 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from config.config import Config
-from etl.transform.transform_base import TransformBase
+from etl.raw_etl.transform.transform_base import TransformBase
 
-project_root = Path(__file__).parent.parent.parent.resolve()
+project_root = Path(__file__).parent.parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)
 
@@ -60,14 +59,15 @@ class TransformGuidelines(TransformBase):
                 logging.error(f"Error processing file {html_file.name}: {str(e)}")
                 continue
 
-        try:
-            with open(
-                self.processed_guidelines_path, "w", encoding="utf-8"
-            ) as json_file:
-                json.dump(all_files_result, json_file, ensure_ascii=False, indent=4)
-            logging.info("All files processed and JSON output created successfully.")
-        except Exception as e:
-            logging.error(f"Failed to write JSON file: {e}")
+        # will be performed by dedicated wtl/raw_etl/load/load_guidelines.py
+        # try:
+        #     with open(
+        #         self.processed_guidelines_path, "w", encoding="utf-8"
+        #     ) as json_file:
+        #         json.dump(all_files_result, json_file, ensure_ascii=False, indent=4)
+        #     logging.info("All files processed and JSON output created successfully.")
+        # except Exception as e:
+        #     logging.error(f"Failed to write JSON file: {e}")
 
         return all_files_result
 
@@ -157,7 +157,7 @@ class TransformGuidelines(TransformBase):
 
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent.parent.resolve()
+    project_root = Path(__file__).parent.parent.parent.parent.resolve()
     config_path = project_root / "config" / "config.yml"
     config = Config(str(config_path))
 

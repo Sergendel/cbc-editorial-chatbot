@@ -1,46 +1,37 @@
+# guidelines_embedding_loader.py
+
 import json
 import logging
-import time
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Callable, Dict, List
-
-from openai import RateLimitError
+from typing import Any, Dict, List
 
 from config.config import Config
+from etl.embeddings_etl.batch_embedder import BatchEmbedder
+from etl.embeddings_etl.embedding_loader_base import EmbeddingLoaderBase
 from models.embedding_model import embedding_model_function
 
-# Setup logging
+# Explicit logging setup (this was missing!)
 project_root = Path(__file__).parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)
-
-log_file_path = log_dir / "embedding_loader.log"
+log_file_path = log_dir / "guidelines_embedding_loader.log"
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.FileHandler(log_file_path),
-        logging.StreamHandler(),  # to continue logging to console as well
+        logging.StreamHandler(),
     ],
 )
 
 logger = logging.getLogger(__name__)
 
-
-# Constants for chunk levels
+# Constants
 CHUNK_LEVEL_PARAGRAPH = "paragraph"
 CHUNK_LEVEL_PREFIX = "level_"
 DEFAULT_URL = "Unknown URL"
 DEFAULT_TIMESTAMP = "Unknown timestamp"
-
-
-class EmbeddingLoaderBase(ABC):
-    @abstractmethod
-    def load_embeddings(self, dataholder: "DataHolder") -> List[Dict[str, Any]]:
-        """Abstract method to load embeddings from a DataHolder."""
-        pass
 
 
 class DataHolder:
@@ -50,7 +41,6 @@ class DataHolder:
 
     @staticmethod
     def load_data(file_path: str) -> Dict[str, Any]:
-        """Loads JSON data from a given file path."""
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
@@ -62,15 +52,11 @@ class DataHolder:
 
 
 class EmbeddingLoader(EmbeddingLoaderBase):
-    def __init__(
-        self, config: Config, embedding_model: Callable[[List[str]], List[List[float]]]
-    ):
-        self.embedding_model = embedding_model
+    def __init__(self, config: Config):
         self.batch_size = config.embedding_loader_batch_size
         self.embeddings_with_metadata: List[Dict[str, Any]] = []
 
     def load_embeddings(self, dataholder: DataHolder) -> List[Dict[str, Any]]:
-        """Traverses data and prepares chunks with metadata for embedding."""
         logger.info("Starting embedding loading process...")
         for document_title, document_content in dataholder.data.items():
             logger.info(f"Processing document: {document_title}")
@@ -82,13 +68,10 @@ class EmbeddingLoader(EmbeddingLoaderBase):
     def _dfs(
         self, current_data: Any, path: List[str], parent_metadata: Dict[str, Any]
     ) -> str:
-        """Recursive DFS traversal to generate embedding chunks
-         with metadata inheritance."""
         current_metadata = parent_metadata.copy()
         if isinstance(current_data, dict):
             node_metadata = current_data.get("metadata", {})
             current_metadata.update(node_metadata)
-
             texts = []
             for key, value in current_data.items():
                 if key == "metadata":
@@ -110,7 +93,6 @@ class EmbeddingLoader(EmbeddingLoaderBase):
     def _create_chunk(
         self, text: str, path: List[str], metadata: Dict[str, Any], chunk_level: str
     ) -> None:
-        """Creates and stores an embedding chunk with associated metadata."""
         chunk_metadata = {
             "chunk_level": chunk_level,
             "document_title": path[0],
@@ -123,58 +105,13 @@ class EmbeddingLoader(EmbeddingLoaderBase):
         self.embeddings_with_metadata.append({"text": text, "metadata": chunk_metadata})
 
 
-class BatchEmbedder:
-    def __init__(
-        self, embedding_model: Callable[[List[str]], List[List[float]]], batch_size: int
-    ):
-        self.embedding_model = embedding_model
-        self.batch_size = batch_size
-
-    def embed_chunks(
-        self, embeddings_with_metadata: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Embeds text chunks in batches and attaches embeddings to metadata."""
-        texts = [item["text"] for item in embeddings_with_metadata]
-        metadata_list = [item["metadata"] for item in embeddings_with_metadata]
-        embeddings = []
-
-        logger.info(f"Starting batch embedding of {len(texts)} chunks...")
-
-        for i in range(0, len(texts), self.batch_size):
-            batch_texts = texts[i : i + self.batch_size]
-            batch_metadata = metadata_list[i : i + self.batch_size]
-            logger.info(
-                f"Embedding batch {i // self.batch_size + 1}/"
-                f"{(len(texts) - 1) // self.batch_size + 1}"
-            )
-
-            while True:
-                try:
-                    batch_embeddings = self.embedding_model(batch_texts)
-                    logger.info("Batch embedding succeeded.")
-                    break
-                except RateLimitError:
-                    logger.warning("Rate limit reached, sleeping for 60 seconds...")
-                    time.sleep(60)
-
-            embeddings.extend(
-                [
-                    {"embedding": emb, "metadata": meta}
-                    for emb, meta in zip(batch_embeddings, batch_metadata)
-                ]
-            )
-
-        logger.info("Completed batch embedding.")
-        return embeddings
-
-
 if __name__ == "__main__":
     project_root = Path(__file__).parent.parent.parent.resolve()
     config_path = project_root / "config" / "config.yml"
     config = Config(str(config_path))
 
     dataholder = DataHolder(config)
-    loader = EmbeddingLoader(config, embedding_model_function)
+    loader = EmbeddingLoader(config)
 
     embeddings_with_metadata = loader.load_embeddings(dataholder)
 

@@ -3,10 +3,10 @@ import logging
 from pathlib import Path
 
 from config.config import Config
-from etl.extract.extract_base import ExtractBase
+from etl.raw_etl.extract.extract_base import ExtractBase
 
 # Logging Setup
-project_root = Path(__file__).parent.parent.parent.resolve()
+project_root = Path(__file__).parent.parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -14,7 +14,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(log_dir / "extract_file.log"),
+        logging.FileHandler(log_dir / "extract_raw_news.log"),
         logging.StreamHandler(),
     ],
 )
@@ -45,7 +45,7 @@ class ExtractFile(ExtractBase):
                 data = json.load(file)
             logging.info(f"Successfully loaded raw data with {len(data)} items.")
 
-            # Save  extracted data
+            # Save extracted data
             with open(self.extracted_news_path, "w", encoding="utf-8") as out_file:
                 json.dump(data, out_file, ensure_ascii=False, indent=4)
             logging.info(f"Extracted data  saved to '{self.extracted_news_path}'.")
@@ -63,7 +63,7 @@ class ExtractFile(ExtractBase):
 
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent.parent.resolve()
+    project_root = Path(__file__).parent.parent.parent.parent.resolve()
     config_path = project_root / "config" / "config.yml"
     config = Config(str(config_path))
 

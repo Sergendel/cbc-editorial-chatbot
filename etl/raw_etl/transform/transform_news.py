@@ -5,10 +5,10 @@ from datetime import datetime
 from pathlib import Path
 
 from config.config import Config
-from etl.transform.transform_base import TransformBase
+from etl.raw_etl.transform.transform_base import TransformBase
 
 # Logging setup
-project_root = Path(__file__).parent.parent.parent.resolve()
+project_root = Path(__file__).parent.parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)
 
@@ -51,16 +51,17 @@ class TransformNews(TransformBase):
             else:
                 skipped_count += 1
 
-        try:
-            with open(self.processed_news_path, "w", encoding="utf-8") as file:
-                json.dump(processed_news, file, ensure_ascii=False, indent=4)
-            logging.info(
-                f"Transformation complete. "
-                f"Processed: {len(processed_news)} articles, "
-                f"Skipped: {skipped_count} articles."
-            )
-        except Exception as e:
-            logging.error(f"Failed to save processed news data: {e}")
+        # will be performed by dedicated etl/etl_raw/load/load_news_json
+        # try:
+        #     with open(self.processed_news_path, "w", encoding="utf-8") as file:
+        #         json.dump(processed_news, file, ensure_ascii=False, indent=4)
+        #     logging.info(
+        #         f"Transformation complete. "
+        #         f"Processed: {len(processed_news)} articles, "
+        #         f"Skipped: {skipped_count} articles."
+        #     )
+        # except Exception as e:
+        #     logging.error(f"Failed to save processed news data: {e}")
 
         return processed_news
 
@@ -127,7 +128,7 @@ class TransformNews(TransformBase):
 
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent.parent.resolve()
+    project_root = Path(__file__).parent.parent.parent.parent.resolve()
     config_path = project_root / "config" / "config.yml"
     config = Config(str(config_path))
 
