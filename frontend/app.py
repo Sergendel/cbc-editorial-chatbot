@@ -1,25 +1,31 @@
 import sys
 from pathlib import Path
 
-# Explicitly add the project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 
-from rag.chains.rag_chain import get_rag_chain
+from rag.chains.rag_chain_mixed import explicit_rag
 
-st.title("CBC Editorial Assistant Chatbot 📰")
+st.title("📰 CBC Editorial Assistant Chatbot")
+st.write("### Explicitly enter your query below:")
 
-query = st.text_input("Enter your query explicitly here:")
+query = st.text_area("Query", placeholder="Enter your explicit query here...")
 
-if st.button("Get Explicit Answer") and query:
-    with st.spinner("Retrieving and generating explicitly..."):
-        rag_chain = get_rag_chain()
-        result = rag_chain.invoke({"query": query})
+if st.button("Get Explicit Answer"):
+    if query.strip():
+        with st.spinner("🔎 Classifying and retrieving relevant data..."):
+            result = explicit_rag(query)
+            st.success(
+                f"✅ Explicit Answer (classified as: {result['classification']}):"
+            )
+            st.write(result["result"])
 
-        st.markdown("### 📌 Generated Answer")
-        st.write(result["result"])
-
-        st.markdown("### 📚 Source Documents")
-        for doc in result["source_documents"]:
-            st.write(f"- {doc.metadata.get('url', 'No URL provided')}")
+            if result.get("source_documents"):
+                st.write("\n📚 **Explicitly Retrieved Sources:**")
+                for i, doc in enumerate(result["source_documents"], 1):
+                    st.write(f"**Source {i}:**")
+                    st.write(doc.metadata)
+                    st.write("-" * 30)
+    else:
+        st.error("Please explicitly enter a valid query!")
