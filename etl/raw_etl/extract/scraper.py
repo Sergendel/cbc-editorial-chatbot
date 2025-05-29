@@ -82,7 +82,7 @@ class SectionScraper:
         self.extracted_guidelines_folder = Path(config.extracted_guidelines_folder)
         self.extracted_guidelines_folder.mkdir(parents=True, exist_ok=True)
 
-    def scrape_page(self, title: str, context) -> str:
+    def scrape_page_old(self, title: str, context) -> str:
         """Scrapes and returns HTML content, explicitly handling special cases."""
         try:
             page = context.new_page()
@@ -90,6 +90,39 @@ class SectionScraper:
             page.goto(self.config.guidelines_url, timeout=60000)
             page.click(f'text="{title}"', force=True)
             page.wait_for_load_state("networkidle")
+
+            content = page.content()
+            page.close()
+            logger.info(f"Successfully scraped page: {title}")
+            return content
+
+        except TimeoutError as e:
+            logger.error(f"Timeout scraping {title}: {e}")
+        except Exception as e:
+            logger.error(f"Error scraping {title}: {e}")
+        return ""
+
+    def scrape_page(self, title: str, context) -> str:
+        """Scrapes and returns HTML content,handling special cases."""
+        try:
+            page = context.new_page()
+            logger.info(f"Scraping page with title '{title}' by simulated click.")
+            page.goto(self.config.guidelines_url, timeout=60000)
+
+            # Click on the title link
+            page.click(f'text="{title}"', force=True)
+
+            # Explicitly wait for specific content to ensure full load
+            page.wait_for_selector(
+                "div.policy-title-container, div.group-detail-desc, h3.policy-title",
+                timeout=60000,
+            )
+
+            # Additional wait to ensure all dynamic elements fully load (optional)
+            page.wait_for_load_state("networkidle")
+
+            # Extra buffer time (if necessary)
+            page.wait_for_timeout(2000)
 
             content = page.content()
             page.close()

@@ -11,6 +11,11 @@ embeddings:
   model_name: "text-embedding-ada-002"
   faiss_index_path: "data/index/faiss_index.idx"
 
+metadata:
+  news_metadata_path: "data/embeddings_storage/news_metadata.json"
+  guidelines_metadata_path: "data/embeddings_storage/guidelines_metadata.json"
+  metadata_lookup_path: "data/metadata_lookup/metadata_lookup.json"
+
 model:
   hf_model_name: "meta-llama/Llama-3-8B-Instruct"
 

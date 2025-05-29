@@ -28,21 +28,21 @@ class EmbeddingSaver:
             embedding_filename: Filename for saving embeddings (.npy).
             metadata_filename: Filename for saving metadata (.json).
         """
-        logger.info("Separating embeddings and metadata explicitly...")
+        logger.info("Separating embeddings and metadata...")
         embeddings = [item["embedding"] for item in embeddings_with_metadata]
         metadata = [item["metadata"] for item in embeddings_with_metadata]
 
-        # Save embeddings explicitly
+        # Save embeddings
         embeddings_array = np.array(embeddings)
         embeddings_path = self.storage_path / embedding_filename
         np.save(embeddings_path, embeddings_array)
-        logger.info(f"Embeddings explicitly saved to {embeddings_path}")
+        logger.info(f"Embeddings saved to {embeddings_path}")
 
-        # Save metadata explicitly
+        # Save metadata
         metadata_path = self.storage_path / metadata_filename
         with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
-        logger.info(f"Metadata explicitly saved to {metadata_path}")
+        logger.info(f"Metadata saved to {metadata_path}")
 
 
 if __name__ == "__main__":
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     batch_embedder = BatchEmbedder(embedding_model_function, loader.batch_size)
     final_embeddings = batch_embedder.embed_chunks(embedding_chunks)
 
-    # Explicitly saving embeddings and metadata
+    # Saving embeddings and metadata
     storage_path = project_root / "data" / "embeddings_storage"
     saver = EmbeddingSaver(storage_path)
 

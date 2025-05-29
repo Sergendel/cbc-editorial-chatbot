@@ -1,4 +1,3 @@
-# embeddings_etl_runner.py
 """
 embeddings_etl_runner.py  orchestrates embedding generation and saving
 for both editorial guidelines and news articles, ensuring modularity,
@@ -27,7 +26,7 @@ from etl.embeddings_etl.news_embedding_loader import DataHolder as NewsDataHolde
 from etl.embeddings_etl.news_embedding_loader import NewsArticlesEmbeddingLoader
 from models.embedding_model import embedding_model_function
 
-# Setup explicit logging
+# Setup logging
 project_root = Path(__file__).parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)

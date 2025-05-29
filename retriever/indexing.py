@@ -3,7 +3,7 @@ from pathlib import Path
 from langchain.embeddings.base import Embeddings
 from langchain_community.vectorstores import FAISS
 
-from embeddings import load_embeddings
+from retriever.embeddings import load_embeddings
 
 
 class PrecomputedEmbeddings(Embeddings):

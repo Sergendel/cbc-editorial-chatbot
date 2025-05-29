@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from config.config import Config
 from etl.embeddings_etl.embedding_loader_base import EmbeddingLoaderBase
 
-# Explicit Logging Setup
+# Logging Setup
 project_root = Path(__file__).parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)
@@ -33,7 +33,7 @@ class DataHolder:
 
     @staticmethod
     def load_data(file_path: str) -> List[Dict[str, Any]]:
-        """Load JSON data explicitly from file."""
+        """Load JSON data from file."""
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
@@ -61,7 +61,7 @@ class NewsArticlesEmbeddingLoader(EmbeddingLoaderBase):
                 "categories": article.get("categories", []),
                 "tags": article.get("tags", {}),
                 "department": article.get("department", "Unknown department"),
-                "chunk_text": text_to_embed,  # Explicitly include the chunk text here
+                "chunk_text": text_to_embed,  # Include the chunk text
             }
             self.embeddings_with_metadata.append(
                 {"text": text_to_embed, "metadata": chunk_metadata}
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     batch_embedder = BatchEmbedder(embedding_model_function, loader.batch_size)
     final_embeddings = batch_embedder.embed_chunks(embedding_chunks)
 
-    # Explicitly save embeddings
+    # Save embeddings
     storage_path = project_root / "data" / "embeddings_storage"
     saver = EmbeddingSaver(storage_path)
     saver.save_embeddings_and_metadata(

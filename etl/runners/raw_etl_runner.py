@@ -34,7 +34,7 @@ def run_script(script_path):
         subprocess.run(["python", full_script_path.name], cwd=script_dir, check=True)
         logger.info(f"Completed successfully: {script_path}")
     except subprocess.CalledProcessError as e:
-        logger.error(f"Explicit failure in {script_path}: {e}")
+        logger.error(f"Failure in {script_path}: {e}")
         raise
 
 

@@ -1,36 +1,31 @@
-import os
-
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
-from langchain_huggingface import HuggingFaceEndpoint
+
+from models.generative_model import get_generative_model
 
 load_dotenv()
 
 
 def classify_query(query: str):
-    classification_llm = HuggingFaceEndpoint(
-        endpoint_url="https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct",
-        huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
-        task="text-generation",
-        temperature=0.01,
-        max_new_tokens=5,
-    )
+    classification_llm = get_generative_model()
 
     classification_prompt = PromptTemplate(
         template="""
-        Classify explicitly the following user query into exactly one category from:
+        Classify the following user query into exactly one category from:
         - Guidelines
         - News
         - Mixed
 
         Query: "{query}"
-        Explicit Category:
+        Category:
         """,
         input_variables=["query"],
     )
 
     structured_prompt = classification_prompt.format(query=query)
-    classification_result = classification_llm.invoke(structured_prompt).strip().lower()
+    classification_result = (
+        classification_llm.invoke(structured_prompt).content.strip().lower()
+    )
 
     if "guidelines" in classification_result:
         return "guidelines"
@@ -38,3 +33,15 @@ def classify_query(query: str):
         return "news"
     else:
         return "mixed"
+
+
+if __name__ == "__main__":
+    test_queries = [
+        "What does CBC say about journalistic accuracy?",
+        "Show me recent CBC news about politics.",
+        "Give me an SEO headline for a climate change article.",
+    ]
+
+    for query in test_queries:
+        category = classify_query(query)
+        print(f"Query: '{query}'\nClassified as: '{category}'\n")

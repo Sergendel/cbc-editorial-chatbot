@@ -1,5 +1,3 @@
-# guidelines_embedding_loader.py
-
 import json
 import logging
 from pathlib import Path
@@ -10,7 +8,7 @@ from etl.embeddings_etl.batch_embedder import BatchEmbedder
 from etl.embeddings_etl.embedding_loader_base import EmbeddingLoaderBase
 from models.embedding_model import embedding_model_function
 
-# Explicit logging setup (this was missing!)
+# Logging setup
 project_root = Path(__file__).parent.parent.parent.resolve()
 log_dir = project_root / "logs"
 log_dir.mkdir(exist_ok=True)
@@ -100,7 +98,7 @@ class EmbeddingLoader(EmbeddingLoaderBase):
             "content_snippet": text[:100],
             "url": metadata.get("original_url", DEFAULT_URL),
             "timestamp": metadata.get("timestamp", DEFAULT_TIMESTAMP),
-            "chunk_text": text,  # Explicitly include the full chunk text here
+            "chunk_text": text,  # Include the full chunk text
         }
         logger.info(f"Created chunk at {' > '.join(path)} [{chunk_level}]")
         self.embeddings_with_metadata.append({"text": text, "metadata": chunk_metadata})

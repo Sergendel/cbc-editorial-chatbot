@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from indexing import create_faiss_index
-
 from embeddings import load_embeddings
+from indexing import create_faiss_index
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

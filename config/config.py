@@ -13,6 +13,18 @@ class Config:
             self.cfg = yaml.safe_load(f)
 
     @property
+    def news_metadata_path(self):
+        return self.cfg["metadata"]["news_metadata_path"]
+
+    @property
+    def guidelines_metadata_path(self):
+        return self.cfg["metadata"]["guidelines_metadata_path"]
+
+    @property
+    def metadata_lookup_path(self):
+        return self.cfg["metadata"]["metadata_lookup_path"]
+
+    @property
     def embedding_loader_batch_size(self):
         return self.cfg["embedding_loader"]["batch_size"]
 
