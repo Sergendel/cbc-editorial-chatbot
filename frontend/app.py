@@ -14,7 +14,8 @@ st.set_page_config(page_title="CBC Editorial Assistant", page_icon="📚", layou
 st.title("📚 CBC Editorial Assistant Chatbot")
 st.markdown(
     """
-This chatbot leverages advanced Retrieval-Augmented Generation (RAG) to assist with CBC editorial tasks, including policy queries, SEO headlines, article summaries, and detailed article retrieval.
+This chatbot leverages advanced Retrieval-Augmented Generation (RAG)
+to assist with CBC editorial tasks,including policy queries, SEO headlines, article summaries, and detailed article retrieval.
 
 Enter your query below and receive intent-driven responses along with source documents.
 """
@@ -76,7 +77,7 @@ if st.button("🚀 Generate Response"):
     else:
         st.warning("Please enter a query  to get a response.")
 
-# Explicit footer
+# footer
 txt = """
 ---
 **CBC Editorial Assistant Chatbot**  
