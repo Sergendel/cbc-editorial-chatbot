@@ -78,20 +78,21 @@ def retrieve_context_with_fallback(
 
 
 def retrieve_relevant_context(query, intent, metadata):
-    context = ""
+    retrieved_docs = []
 
     if intent == "policy_query":
+        retrieved_docs = guidelines_index.similarity_search(query, k=3)
         context = retrieve_context_with_fallback(
             guidelines_index, query, fallback_keywords=" ".join(query.split()[-2:])
         )
 
     elif intent in ["headline_request", "summary_request", "full_article_request"]:
+        retrieved_docs = news_index.similarity_search(query, k=3)
         context = retrieve_context_with_fallback(
             news_index, query, fallback_keywords=" ".join(query.split()[-2:])
         )
 
     elif metadata:
-        retrieved_docs = []
         if metadata.get("id"):
             retrieved_docs = retrieve_doc_by_metadata(news_index, "id", metadata["id"])
         elif metadata.get("timestamp"):
@@ -103,10 +104,16 @@ def retrieve_relevant_context(query, intent, metadata):
                 guidelines_index, "url", metadata["url"]
             )
 
-        if retrieved_docs:
-            context = retrieved_docs[0].page_content
+        context = retrieved_docs[0].page_content if retrieved_docs else ""
 
-    return context
+    else:
+        context = ""
+
+    # Explicitly ensure context is complete (fallback if empty):
+    if not context and retrieved_docs:
+        context = "\n".join(doc.page_content for doc in retrieved_docs)
+
+    return context, retrieved_docs
 
 
 def metadata_exists(key: str, value: str) -> bool:
@@ -148,7 +155,7 @@ def intent_driven_rag_chain(user_query):
 
     retrieved_docs, retrieved_context = [], ""
 
-    # Metadata-based retrieval (your robust previous logic)
+    # Explicit Metadata-based retrieval
     if metadata.get("url") and metadata_exists("urls", metadata["url"]):
         retrieved_docs = retrieve_doc_by_metadata(
             guidelines_index, "url", metadata["url"]
@@ -178,35 +185,36 @@ def intent_driven_rag_chain(user_query):
             news_index, "last_update", metadata["last_update"]
         )
 
-    # Fallback if no docs retrieved by metadata
+    # Explicit Semantic retrieval if no docs retrieved by metadata
     if not retrieved_docs:
-        retrieved_context = retrieve_relevant_context(user_query, intent, metadata)
+        retrieved_context, retrieved_docs = retrieve_relevant_context(
+            user_query, intent, metadata
+        )
     else:
         retrieved_context = retrieved_docs[0].page_content
 
-    # Handling if still no context found
+    # Explicit handling if still no context found
     if not retrieved_context.strip():
-        return "I don't know."
+        return {"response": "I don't know.", "sources": []}
 
-    # Combine intent and retrieved context for accurate prompt construction
+    # Explicitly construct the prompt using retrieved context
     prompt = get_prompt(intent, retrieved_context, user_query)
     llm = get_generative_model()
 
     response_raw = llm.invoke(prompt)
 
-    # EHandle both AIMessage (OpenAI) and str (HuggingFace) responses
-    if hasattr(response_raw, "content"):
-        response = response_raw.content.strip()
-    else:
-        response = response_raw.strip()
+    # Explicitly handle different LLM response formats
+    response = (
+        response_raw.content.strip()
+        if hasattr(response_raw, "content")
+        else response_raw.strip()
+    )
 
-    # Gather source document metadata
+    # Explicitly gather source document metadata
     sources = []
-
     for doc in retrieved_docs:
         metadata = doc.metadata
 
-        # Guidelines documents explicitly have 'url' and 'timestamp'
         if "url" in metadata and "timestamp" in metadata:
             sources.append(
                 {
@@ -219,7 +227,6 @@ def intent_driven_rag_chain(user_query):
                 }
             )
 
-        # News articles explicitly have 'id' and 'title'
         elif "id" in metadata and "title" in metadata:
             sources.append(
                 {
@@ -233,7 +240,6 @@ def intent_driven_rag_chain(user_query):
                 }
             )
 
-        # Explicit fallback for unexpected structures
         else:
             sources.append({"type": "Unknown", "metadata": metadata})
 
@@ -242,10 +248,10 @@ def intent_driven_rag_chain(user_query):
 
 if __name__ == "__main__":
     test_queries = [
+        "What’s CBC’s guideline on citing anonymous sources?",
         "Give me the document with timestamp 2025-05-29T15:25:30.625595",
         "Summarize  https://cbc.radio-canada.ca/en/vision/governance/"
         "journalistic-standards-and-practices/children-and-youth",
-        "What’s CBC’s guideline on citing anonymous sources?",
         "Suggest an SEO-optimized headline for this article:1.7346111",
         "Summarize this article for a Twitter post.",
         "Show me the details of article ID 1.6272172",
