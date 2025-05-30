@@ -6,7 +6,7 @@ A sophisticated Retrieval-Augmented Generation (RAG) chatbot designed to assist 
 
 This chatbot harnesses advanced AI and Natural Language Processing (NLP) technologies, combining semantic retrieval via FAISS and generative language models from Hugging Face and OpenAI to support editorial workflows at CBC.
 
-## Demo Video
+## Demo Video  (play CBC_Bot.mp4 in root)
 
 [![FitBeat Demo](./CBC_Bot.gif)](./CBC_Bot.mp4)
 
@@ -68,25 +68,37 @@ python -m rag.chains.IntentDrivenRAGChain
 
 ### Option B: Full Pipeline (ETL → Indexing → Frontend or RAG)
 
-1. **Run the Raw ETL Pipeline:**
+1. **Run the Raw Data ETL Pipeline:**
 ```bash
 python etl/runners/raw_etl_runner.py
 ```
 
-2. **Generate Embeddings and FAISS Indices:**
+2. **Run the Embedding ETL Pipeline:**
+```bash
+python etl/runners/embeddings_etl_runner.py
+```
+
+3. **Generate Embeddings and FAISS Indices:**
 ```bash
 python retriever/runner.py
 ```
 
-3. **Start the Frontend Interface:**
+4. **Extract Metadata for Enhanced Retrieval:**
+```bash
+python etl/metadata_etl/extract_metadata.py
+```
+
+5. **Start the Frontend Interface:**
 ```bash
 streamlit run frontend/app.py
 ```
 
-4. **Run RAG chain standalone test:**
+6. **Run RAG chain standalone test:**
 ```bash
 python -m rag.chains.IntentDrivenRAGChain
 ```
+
+---
 
 ---
 ## Technical Choices and Considerations
@@ -144,7 +156,26 @@ By integrating these technical considerations, the resulting chatbot is robust, 
 "What’s CBC’s guideline on citing anonymous sources?"
 
 **Chatbot Response:**
-"CBC mandates strict verification standards for citing anonymous sources, requiring explicit editorial justification and approval from senior editorial management."
+"CBC's editorial guidelines emphasize strict verification standards and careful consideration when citing anonymous sources. Such citations require explicit editorial justification and approval from senior management to ensure accountability and transparency."
+
+**Source Documents:**
+
+1. **Type:** Guidelines  
+   **Title:** Investigative Journalism  
+   **Section Path:** Investigative Journalism > Verification of User Generated Content in News Stories  
+   **URL:** [Investigative Journalism](https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices/investigative-journalism)
+
+2. **Type:** Guidelines  
+   **Title:** Use of Social Media  
+   **Section Path:** Use of Social Media > Verification of User Generated Content (UGC) in News Stories  
+   **URL:** [Use of Social Media](https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices/use-of-social-media)
+
+3. **Type:** Guidelines  
+   **Title:** User Generated Content (UGC)  
+   **Section Path:** User Generated Content (UGC) > Verification of User Generated Content (UGC) in News Stories  
+   **URL:** [User Generated Content](https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices/user-generated-content)
+
+---
 
 ### Example: SEO Headline Suggestion
 
@@ -152,19 +183,19 @@ By integrating these technical considerations, the resulting chatbot is robust, 
 "Suggest an SEO-optimized headline for article ID 1.6272172."
 
 **Chatbot Response:**
-"Climate Crisis Deepens: Key Insights from Latest CBC Climate Report"
+"CBC N.L. Launches Annual 'Make the Season Kind' Campaign to Support Local Food Banks Amid Rising Demand"
 
-### Example: Social Media Summary
+**Source Document:**
 
-**User Query:**
-"Summarize article ID 1.6272172 for Twitter."
+- **Type:** News  
+  **Title:** CBC N.L. launches annual Make the Season Kind campaign to support food banks  
+  **ID:** 1.6272172
 
-**Chatbot Response:**
-"CBC highlights urgent climate risks and calls for immediate action to mitigate environmental threats. #ClimateCrisis #CBCNews"
+---
 
 ## 📽 Optional Demo Video
 
-Include a link here to a short video demonstrating the chatbot in action (optional but highly recommended).
+play CBC_Bot.mp4 vdeo (in root).
 
 ## 📋 Evaluation and Performance Metrics
 
