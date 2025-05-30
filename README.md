@@ -31,20 +31,12 @@ This chatbot harnesses advanced AI and Natural Language Processing (NLP) technol
 
 ## 🛠 Detailed Setup Instructions
 
-### Prerequisites
-
-Ensure you have the following installed:
-
-* Python 3.10+
-* Dependencies: FAISS, NumPy, LangChain, Streamlit, BeautifulSoup, Playwright
-* API keys from OpenAI and Hugging Face, securely stored in a `.env` file.
-
 ### Installation Steps
 
 1. **Clone the Repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Sergendel/cbc-editorial-chatbot
 cd CBC
 ```
 
@@ -58,38 +50,87 @@ pip install -r requirements.txt
 
 * Set up your API keys by copying the provided .env-example file to a new .env file at the project's root directory, and insert your API credentials accordingly.
 
-4. **Run the Raw ETL Pipeline**
+## 🚀 Launching the Project
 
-```bash
-python etl/runners/raw_etl_runner.py
-```
+You have two main options for running the system:
 
-5. **Generate Embeddings and FAISS Indices**
+### Option A: Quick Launch (with preprocessed data and indices)
 
-```bash
-python retriever/runner.py
-```
-
-6. **Start the Frontend Interface**
-
+- **Launch Streamlit frontend:**
 ```bash
 streamlit run frontend/app.py
 ```
 
-## 📖 Technical Choices and Justifications
+- **Run standalone RAG chain (command-line interaction):**
+```bash
+python -m rag.chains.IntentDrivenRAGChain
+```
+
+### Option B: Full Pipeline (ETL → Indexing → Frontend or RAG)
+
+1. **Run the Raw ETL Pipeline:**
+```bash
+python etl/runners/raw_etl_runner.py
+```
+
+2. **Generate Embeddings and FAISS Indices:**
+```bash
+python retriever/runner.py
+```
+
+3. **Start the Frontend Interface:**
+```bash
+streamlit run frontend/app.py
+```
+
+4. **Run RAG chain standalone test:**
+```bash
+python -m rag.chains.IntentDrivenRAGChain
+```
+
+---
+## Technical Choices and Considerations
 
 ### Model Selection
+The chosen generative model for this project is **Hugging Face's `meta-llama/Llama-3-8B-Instruct`** due to its strong capability in handling instruction-following tasks, which aligns well with a Retrieval-Augmented Generation (RAG) system designed for assisting editorial tasks. This model was selected primarily for its robustness, ease of integration, and extensive support within the Hugging Face ecosystem.
 
-* **Mistral-7B-Instruct-v0.3**: Chosen primarily due to its proven efficiency, lower latency, and strong generative capabilities suited for editorial tasks.
-* **Alternative Models**: Llama-3.1-8B-Instruct and GPT-3.5 Turbo were considered for scalability and comparative benchmarking.
+**Beyond Hugging Face:**  
+Potential alternative choices could include:
 
-### Vector Store: FAISS
+### Retrieval Enhancement with Cross-Encoder Reranker (BERT/BART)
 
-* Selected for its robustness, scalability, and superior speed in handling high-dimensional semantic searches.
+An additional refinement that could significantly enhance retrieval accuracy and response relevance is the integration of a **cross-encoder reranker**. Specifically, models like **BERT** or **BART** can be leveraged as reranking layers:
 
-### Data Handling and Chunking Strategy
+- **BERT (Bidirectional Encoder Representations from Transformers)**:
+  - Utilizes deep contextual embeddings to understand the nuanced meaning of queries in relation to retrieved document chunks.
+  - Ideal for fine-grained reranking of retrieved context to ensure maximum relevance before passing information to the generative model.
 
-* Data processed and chunked optimally to balance retrieval accuracy and performance efficiency.
+- **BART (Bidirectional and Auto-Regressive Transformers)**:
+  - Combines the strengths of bidirectional encoding (contextual understanding) and autoregressive decoding (generative capability).
+  - Especially beneficial for tasks like headline optimization and summarization due to its generative properties.
+
+### How It Would Work:
+- Initial retrieval from FAISS (semantic search) returns a set of candidate chunks.
+- A cross-encoder model (BERT or BART) then evaluates these candidates together with the query, assigning relevance scores.
+- The chunks are reranked according to these scores, ensuring the most contextually accurate and relevant chunks are provided to the generative model.
+
+Incorporating this additional layer could notably improve the chatbot's precision, context coherence, and overall responsiveness.
+
+
+### Vector Store
+**FAISS** was selected as the vector store for its efficiency, speed, and straightforward integration with Python-based systems. FAISS excels at handling large-scale similarity searches efficiently, which is essential for responsive retrieval in a RAG-based chatbot. Additionally, FAISS supports multiple indexing and querying strategies, providing flexibility in performance tuning.
+
+### Chunking Method
+The **Depth-First Search (DFS) chunking strategy** was employed to maintain the semantic coherence and hierarchical integrity of the scraped documents. This method was specifically chosen because:
+
+- It preserves context within each chunk, which significantly improves retrieval accuracy and relevance.
+- It leverages the hierarchical nature of the CBC editorial guidelines, ensuring logically grouped sections remain intact.
+- It enables fine-grained control over chunk sizes and boundaries, which directly enhances the chatbot’s ability to retrieve contextually appropriate chunks.
+
+### Potential Addition: Memory
+In future iterations, the addition of a **memory component** could significantly enhance the user experience by maintaining conversational context over multiple queries. Implementing LangChain’s conversation memory capabilities or other stateful tracking methods would allow the chatbot to refer back to previous interactions, improving the coherence and contextual relevance of responses during extended interactions.
+
+By integrating these technical considerations, the resulting chatbot is robust, contextually accurate, and scalable for practical deployment in an editorial environment.
 
 ### Environment and API Management
 
