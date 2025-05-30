@@ -249,11 +249,12 @@ def intent_driven_rag_chain(user_query):
 if __name__ == "__main__":
     test_queries = [
         "What’s CBC’s guideline on citing anonymous sources?",
-        "Give me the document with timestamp 2025-05-29T15:25:30.625595",
-        "Summarize  https://cbc.radio-canada.ca/en/vision/governance/"
-        "journalistic-standards-and-practices/children-and-youth",
         "Suggest an SEO-optimized headline for this article:1.7346111",
-        "Summarize this article for a Twitter post.",
+        "Summarize the article 1.7346111 for a Twitter post.",
+        "Please find latest news about covid and summarize",
+        "Give me the document with timestamp 2025-05-29T15:25:30.625595",
+        "Summarize  https://cbc.radio-canada.ca/en/vision/governance/journalistic-standards-and-practices/children-and-youth",
+        #
         "Show me the details of article ID 1.6272172",
         "Give me the document with timestamp 2025-05-29T15:24:08.648385",
         "Suggest an SEO-optimized headline for article 1.6272172",
@@ -261,7 +262,7 @@ if __name__ == "__main__":
         "Show me the details of article ID 1.6272172",
         "Give me the document with timestamp 2025-05-29T15:25:30.625595",
         "What's the weather today?",
-        "Please find latest news about weather and summarize",
+
     ]
 
     for query in test_queries:

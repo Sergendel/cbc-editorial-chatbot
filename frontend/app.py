@@ -21,7 +21,7 @@ Enter your query below and receive intent-driven responses along with source doc
 """
 )
 
-user_query = st.text_area("🔎 Enter your query  here:", height=150)
+user_query = st.text_area("🔎 Enter your query  here:", height=70)
 
 if st.button("🚀 Generate Response"):
     if user_query.strip():
