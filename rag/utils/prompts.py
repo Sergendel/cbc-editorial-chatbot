@@ -1,4 +1,3 @@
-# prompts.py explicitly defined
 from langchain.prompts import PromptTemplate
 
 RAG_PROMPT = PromptTemplate(
